@@ -38,9 +38,16 @@ class Ops
     /**
      * @var int
      *
-     * @ORM\Column(name="query", type="integer")
+     * @ORM\Column(name="quantity", type="integer")
      */
-    private $query;
+    private $quantity;
+
+    /**
+     * @var bool
+     *
+     * @ORM\Column(name="flag", type="boolean")
+     */
+    private $flag;
 
     /**
      * Get id
@@ -100,19 +107,6 @@ class Ops
         return $this->cost;
     }
 
-    /**
-     * Set query
-     *
-     * @param \query $query
-     *
-     * @return Ops
-     */
-    public function setQuery(\query $query)
-    {
-        $this->query = $query;
-
-        return $this;
-    }
 
     /**
      * Get query
@@ -122,5 +116,29 @@ class Ops
     public function getQuery()
     {
         return $this->query;
+    }
+
+    /**
+     * Set flag
+     *
+     * @param boolean $flag
+     *
+     * @return Ops
+     */
+    public function setFlag($flag)
+    {
+        $this->flag = $flag;
+
+        return $this;
+    }
+
+    /**
+     * Get flag
+     *
+     * @return boolean
+     */
+    public function getFlag()
+    {
+        return $this->flag;
     }
 }
