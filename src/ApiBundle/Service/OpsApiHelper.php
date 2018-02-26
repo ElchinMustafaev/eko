@@ -80,8 +80,6 @@ class OpsApiHelper
                     ->findOneBy(
                         array(
                             "name" => $key,
-                            "cost" => $value["price"],
-                            "quantity" => $value['quantity']
                         )
                     );
                 if (empty($db_old_record)) {
@@ -97,6 +95,16 @@ class OpsApiHelper
                     $new++;
                     unset($new_record);
                 } else {
+                    $old_cost = $db_old_record->getCost();
+                    if (100 - (($value['price'] * 100) / $old_cost) >= 40) {
+                        file_put_contents( __DIR__ . '/skins/test.txt', $old_cost, FILE_APPEND);
+                        file_put_contents( __DIR__ . '/skins/test.txt', json_encode($value), FILE_APPEND);
+                    }
+                    $db_old_record->setCost($value['price']);
+                    $db_old_record->setQuantity($value['quantity']);
+                    $db_old_record->setFlag(false);
+                    $this->em->persist($db_old_record);
+                    $this->em->flush();
                     $old++;
                 }
                 unset($db_old_record);
@@ -130,6 +138,7 @@ class OpsApiHelper
                 ->andWhere('i.cost <= :max_cost')
                 ->andWhere('i.quantity <= :max_quantity')
                 ->andWhere('i.quantity >= :min_quantity')
+                ->andWhere('i.flag = false')
                 ->setParameter('min_cost', $min_cost)
                 ->setParameter('max_cost', $max_cost)
                 ->setParameter('min_quantity', $min_quantity)
@@ -234,12 +243,40 @@ class OpsApiHelper
     public function EqualPrice(array $input_array_from_db, array $input_array_from_csGoBack, $percent)
     {
         try {
-            foreach ($input_array_from_csGoBack as $key => $value) {
-                if ($input_array_from_db['name'] === $key) {
-                    if (100 - (($input_array_from_db['cost'] / $value['price'])) >= $percent) {
-                        return $input_array_from_db;
+            if (!empty($input_array_from_csGoBack)) {
+                foreach ($input_array_from_csGoBack as $key => $value) {
+                    if ($input_array_from_db['name'] === $key) {
+                        if (100 - (($input_array_from_db['cost'] / $value['price'])) >= $percent) {
+                            return $input_array_from_db;
+                        } else {
+                            $db_old_record = $this
+                                ->em
+                                ->getRepository("ApiBundle:Ops")
+                                ->findOneBy(
+                                    array(
+                                        "name" => $input_array_from_db['name'],
+                                    )
+                                );
+                            $db_old_record->setFlag(true);
+                            $this->em->persist($db_old_record);
+                            $this->em->flush();
+                            unset($db_old_record);
+                        }
                     }
                 }
+            } else {
+                $db_old_record = $this
+                    ->em
+                    ->getRepository("ApiBundle:Ops")
+                    ->findOneBy(
+                        array(
+                            "name" => $input_array_from_db['name'],
+                        )
+                    );
+                $db_old_record->setFlag(true);
+                $this->em->persist($db_old_record);
+                $this->em->flush();
+                unset($db_old_record);
             }
         } catch (\Exception $e) {
             return $e->getMessage();
