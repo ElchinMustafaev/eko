@@ -39,11 +39,12 @@ class CheckInfoCommand extends ContainerAwareCommand
             $return_from_db = $ops_helper->getInfoFromDb($min_c, $max_c, $min_q, $max_q);
 
             $em = $this->getContainer()->get('doctrine')->getManager();
-
+            $i = 0;
             foreach ($return_from_db as $key => $value) {
                 $return = $ops_helper->getInfoFromCsGoBack($value['name'], "");
                 $return = $return['result'];
                 $info = $ops_helper->EqualPrice($value, $return, $percent);
+                $i++;
                 if (!empty($info)) {
                     $all_info = new AllInfo();
 
@@ -56,7 +57,7 @@ class CheckInfoCommand extends ContainerAwareCommand
                     $em->flush();
                 }
             }
-
+            $output->writeln('search ' . $i . 'min_cost = ' . $min_c . ' max_cost = ' . $max_c . "\n");
         } catch (\Exception $e) {
             $output->writeln($e->getMessage());
             $output->writeln($e->getFile());
