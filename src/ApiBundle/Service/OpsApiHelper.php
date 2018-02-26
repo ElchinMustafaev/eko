@@ -234,13 +234,13 @@ class OpsApiHelper
     }
 
     /**
-     * @param array $input_array_from_db
-     * @param array $input_array_from_csGoBack
+     * @param $input_array_from_db
+     * @param $input_array_from_csGoBack
      * @param $percent
      *
      * @return array|string
      */
-    public function EqualPrice(array $input_array_from_db, array $input_array_from_csGoBack, $percent)
+    public function EqualPrice($input_array_from_db, $input_array_from_csGoBack, $percent)
     {
         try {
             if (!empty($input_array_from_csGoBack)) {

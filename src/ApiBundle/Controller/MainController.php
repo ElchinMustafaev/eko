@@ -28,6 +28,7 @@ class MainController extends Controller
 
             foreach ($return_from_db as $key => $value) {
                 $return = $ops_helper->getInfoFromCsGoBack($value['name'], "");
+                print_r($return);
                 $return = $return['result'];
                 print_r($i++ . "\n");
                 print_r($ops_helper->EqualPrice($value, $return, 37));
