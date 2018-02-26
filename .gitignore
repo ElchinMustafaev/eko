@@ -17,3 +17,6 @@
 /web/bundles/
 .idea/
 .idea/vcs.xml
+.DS_Store
+/src/.DS_Store
+src/ApiBundle/Service/.DS_Store
