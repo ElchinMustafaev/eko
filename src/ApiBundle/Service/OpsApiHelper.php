@@ -282,4 +282,80 @@ class OpsApiHelper
             return $e->getMessage();
         }
     }
+
+    /**
+     * @return mixed
+     */
+    public function getInfoToBye() {
+        try {
+            $qb = $this
+                ->em
+                ->createQueryBuilder('a');
+            $query = $qb->select('a.name, a.cost, a.percent, a.time')
+                ->from('ApiBundle:AllInfo', 'a')
+                ->setMaxResults(1)
+                ->orderBy('a.id', 'DESC')
+                ->getQuery()
+                ->getSingleResult();
+
+            return $query;
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    /**
+     * @param $record
+     *
+     * @return bool|string
+     */
+    public function removeRecord($record)
+    {
+        try {
+            $record_from_db = $this
+                ->em
+                ->getRepository("ApiBundle:AllInfo")
+                ->findOneBy(
+                    array(
+                        'name' => $record["name"],
+                        'time' => $record['time'],
+                    )
+                );
+            $this->em->remove($record_from_db);
+            $this->em->flush();
+            return true;
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+
+    public function opsByeItem($item_list)
+    {
+        try {
+            $url = "https://api.opskins.com/ISales/BuyItems/v1/";
+            $ch = curl_init();
+
+            $item =
+                "key=" . $this->container->getParameter("ops_api_key") .
+                "&saleids=" . $item_list["sales"][0]["id"] . "&total=" . $item_list["sales"][0]["amount"];
+
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                    'Content-Type: application/x-www-form-urlencoded',
+                )
+            );
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $item);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+            $output = curl_exec($ch);
+
+            curl_close($ch);
+
+            return $output;
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
 }

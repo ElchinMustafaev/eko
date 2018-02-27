@@ -21,11 +21,11 @@ class MainController extends Controller
             //$return = $ops_helper->downloadOpsLowCost(730);
             //$return = $ops_helper->writeInDb($return);
 
-            $i = 0;
-            $return_from_db = $ops_helper->getInfoFromDb(1000, 5000, 1, 500);
+            //$i = 0;
+            //$return_from_db = $ops_helper->getInfoFromDb(1000, 5000, 1, 500);
             //print_r($return_from_db);
             //$return = $ops_helper->getInfoFromCsGoBack($return_from_db[0]['name'], "");
-
+            /**
             foreach ($return_from_db as $key => $value) {
                 $return = $ops_helper->getInfoFromCsGoBack($value['name'], "");
                 print_r($return);
@@ -33,7 +33,14 @@ class MainController extends Controller
                 print_r($i++ . "\n");
                 print_r($ops_helper->EqualPrice($value, $return, 37));
             }
-
+            **/
+            $return_from_db = $ops_helper->getInfoToBye();
+            print_r($return_from_db);
+            echo "\n";
+            $return = $ops_helper->searchItem($return_from_db["cost"], 50, $return_from_db['name'], "730_2");
+            //print_r($ops_helper->removeRecord($return_from_db));
+            echo "\n";
+            print_r($return['response']);
 
             return new JsonResponse();
         } catch (\Exception $e) {
