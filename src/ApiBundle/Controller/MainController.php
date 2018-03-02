@@ -46,4 +46,22 @@ class MainController extends Controller
             return new JsonResponse($err);
         }
     }
+
+    /**
+     * @Route("test2")
+     *
+     * @return Response
+     */
+    public function test2() {
+        //echo date(DATE_RFC822);
+        //echo date('D, d M Y H:i:s', time() - 10800) . ' GMT';
+        $ops_helper = $this->get("api.ops.helper");
+        $start_time = time();
+        $result = $ops_helper->getTableFromCsGoBack();
+        foreach ($result['result'] as $value) {
+            print_r($ops_helper->equalPriceCsGoBack($value, 100, 1, 40));
+        }
+        print_r((time() - $start_time) / 60);
+        return new JsonResponse();
+    }
 }
