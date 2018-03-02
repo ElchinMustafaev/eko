@@ -151,30 +151,42 @@ class OpsApiHelper
         }
     }
 
+    /**
+     * @param $cost
+     * @param $percent
+     * @param $name
+     * @param $app_id
+     *
+     * @return mixed|string
+     */
     public function searchItem($cost, $percent, $name, $app_id)
     {
         try {
             $min_cost = ($cost / 100) * ((100 - $percent) / 100);
             $max_cost = ($cost / 100) * ((100 + $percent) / 100);
             $url = "https://api.opskins.com/ISales/Search/v1/?app=" . $app_id . "&search_item=" .
-                '"' . $name . '"' . "&min=" . $min_cost . "&max=" .
+                '"' . urlencode($name) . '"' . "&min=" . $min_cost . "&max=" .
                 $max_cost . "&key=" . $this->container->getParameter("ops_api_key");
             // create curl resource
-            $ch = curl_init();
 
-            // set url
-            curl_setopt($ch, CURLOPT_URL, $url);
+            $curl = curl_init();
 
-            //return the transfer as a string
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt_array($curl, array(
+                CURLOPT_URL => $url,
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => "",
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 30,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => "GET",
+            ));
 
-            // $output contains the output string
-            $output = curl_exec($ch);
+            $response = curl_exec($curl);
+            $err = curl_error($curl);
 
-            // close curl resource to free up system resources
-            curl_close($ch);
-
-            $output = json_decode($output, 1);
+            curl_close($curl);
+            print_r($err);
+            $output = json_decode($response, 1);
 
             return $output;
         } catch (\Exception $e) {
@@ -352,6 +364,8 @@ class OpsApiHelper
                 } else {
                     return null;
                 }
+            } else {
+                return null;
             }
         } catch (\Exception $e) {
             return $e->getMessage();

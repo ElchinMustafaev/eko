@@ -4,8 +4,8 @@ namespace ApiBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Symfony\Component\BrowserKit\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class MainController extends Controller
 {
@@ -34,15 +34,11 @@ class MainController extends Controller
                 print_r($ops_helper->EqualPrice($value, $return, 37));
             }
             **/
-            $return_from_db = $ops_helper->getInfoToBye();
-            print_r($return_from_db);
-            echo "\n";
-            $return = $ops_helper->searchItem($return_from_db["cost"], 50, $return_from_db['name'], "730_2");
             //print_r($ops_helper->removeRecord($return_from_db));
-            echo "\n";
-            print_r($return['response']);
+            //echo "\n";
 
-            return new JsonResponse();
+            $return = "";
+            return new JsonResponse($return);
         } catch (\Exception $e) {
             $err = array(
                 $e->getMessage(),
@@ -59,16 +55,16 @@ class MainController extends Controller
      *
      * @return Response
      */
-    public function test2() {
+    public function test2()
+    {
         //echo date(DATE_RFC822);
         //echo date('D, d M Y H:i:s', time() - 10800) . ' GMT';
         $ops_helper = $this->get("api.ops.helper");
-        $start_time = time();
-        $result = $ops_helper->getTableFromCsGoBack();
-        foreach ($result['result'] as $value) {
-            print_r($ops_helper->equalPriceCsGoBack($value, 100, 1, 40));
-        }
-        print_r((time() - $start_time) / 60);
-        return new JsonResponse();
+        $return = $ops_helper->searchItem(27, 50, "StatTrak™ MAC-10 | Carnivore (Minimal Wear)", "730_2");
+        //$return = $ops_helper->downloadOpsLowCost("730");
+        print_r($return);
+
+
+        return new Response();
     }
 }
