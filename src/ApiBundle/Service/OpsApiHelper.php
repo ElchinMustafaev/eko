@@ -166,7 +166,7 @@ class OpsApiHelper
             $max_cost = ($cost / 100) * ((100 + $percent) / 100);
             $url = "https://api.opskins.com/ISales/Search/v1/?app=" . $app_id . "&search_item=" .
                 '"' . urlencode($name) . '"' . "&min=" . $min_cost . "&max=" .
-                $max_cost . "&key=" . $this->container->getParameter("ops_api_key");
+                $max_cost . "&key=" . $this->container->getParameter("ops_api_key_search");
             // create curl resource
 
             $curl = curl_init();
@@ -444,6 +444,37 @@ class OpsApiHelper
 
             return $output;
 
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function getBalance()
+    {
+        try {
+            $curl = curl_init();
+
+            curl_setopt_array($curl, array(
+                CURLOPT_URL => "https://api.opskins.com/IUser/GetBalance/v1/?key=" . $this->container->getParameter("ops_api_key"),
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => "",
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 30,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => "GET",
+                CURLOPT_HTTPHEADER => array(
+                    "Cache-Control: no-cache",
+                    "Postman-Token: a2c784a5-f779-2239-9771-35fc23591c44"
+                ),
+            ));
+
+            $response = curl_exec($curl);
+            $response = json_decode($response, 1);
+            $response = $response['balance'] / 100;
+
+            curl_close($curl);
+
+            return $response;
         } catch (\Exception $e) {
             return $e->getMessage();
         }

@@ -29,7 +29,7 @@ class CsgobackTradeCommand extends ContainerAwareCommand
             $percent = $input->getOption('percent');
 
             $ops_helper = $this->getContainer()->get("api.ops.helper");
-
+            $i = 0;
             while (true) {
                 $start_time = time();
                 $result = $ops_helper->getTableFromCsGoBack();
@@ -45,6 +45,7 @@ class CsgobackTradeCommand extends ContainerAwareCommand
                             $output->writeln("--------------------------------------\n");
                             $output->writeln($ops_helper->opsByeItem($item['response']));
                             $output->writeln("--------------------------------------\n");
+                            $max_cost = $ops_helper->getBalance();
                             sleep(1);
                         } else {
                             $output->writeln("--------------------------------------\n");
@@ -55,6 +56,12 @@ class CsgobackTradeCommand extends ContainerAwareCommand
                 }
                 print_r((time() - $start_time) / 60 . "\n");
                 print_r(count($result['result']) . "\n");
+                $i++;
+                if ($i == 10) {
+                    $max_cost = $ops_helper->getBalance();
+                    $i = 0;
+                }
+                print_r($max_cost . "\n");
                 sleep(10);
             }
         } catch (\Exception $e) {

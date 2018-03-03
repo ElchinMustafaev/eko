@@ -17,4 +17,5 @@ parameters:
 
     # A secret key that's used to generate certain security-related tokens
     secret: ThisTokenIsNotSoSecretChangeIt
-    ops_api_key: 6aa668f0f60b6b176db433cbe7a426
+    ops_api_key: 9705eea199113d9e7c005b6a27f0f1
+    ops_api_key_search: 6aa668f0f60b6b176db433cbe7a426

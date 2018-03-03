@@ -60,9 +60,9 @@ class MainController extends Controller
         //echo date(DATE_RFC822);
         //echo date('D, d M Y H:i:s', time() - 10800) . ' GMT';
         $ops_helper = $this->get("api.ops.helper");
-        $return = $ops_helper->searchItem(27, 50, "StatTrak™ MAC-10 | Carnivore (Minimal Wear)", "730_2");
+        //$return = $ops_helper->searchItem(27, 50, "StatTrak™ MAC-10 | Carnivore (Minimal Wear)", "730_2");
         //$return = $ops_helper->downloadOpsLowCost("730");
-        print_r($return);
+        print_r($ops_helper->getBalance());
 
 
         return new Response();
