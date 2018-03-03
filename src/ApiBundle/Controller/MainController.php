@@ -4,8 +4,8 @@ namespace ApiBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Symfony\Component\BrowserKit\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class MainController extends Controller
 {
@@ -34,12 +34,11 @@ class MainController extends Controller
                 print_r($ops_helper->EqualPrice($value, $return, 37));
             }
             **/
-            $return = $ops_helper->searchItem(230, 1, "Overpass Pin", "730_2");
             //print_r($ops_helper->removeRecord($return_from_db));
-            echo "\n";
-            print_r($return);
+            //echo "\n";
 
-            return new JsonResponse();
+            $return = "";
+            return new JsonResponse($return);
         } catch (\Exception $e) {
             $err = array(
                 $e->getMessage(),
@@ -49,5 +48,23 @@ class MainController extends Controller
 
             return new JsonResponse($err);
         }
+    }
+
+    /**
+     * @Route("test2")
+     *
+     * @return Response
+     */
+    public function test2()
+    {
+        //echo date(DATE_RFC822);
+        //echo date('D, d M Y H:i:s', time() - 10800) . ' GMT';
+        $ops_helper = $this->get("api.ops.helper");
+        $return = $ops_helper->searchItem(27, 50, "StatTrak™ MAC-10 | Carnivore (Minimal Wear)", "730_2");
+        //$return = $ops_helper->downloadOpsLowCost("730");
+        print_r($return);
+
+
+        return new Response();
     }
 }

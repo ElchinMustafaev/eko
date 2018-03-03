@@ -151,30 +151,42 @@ class OpsApiHelper
         }
     }
 
+    /**
+     * @param $cost
+     * @param $percent
+     * @param $name
+     * @param $app_id
+     *
+     * @return mixed|string
+     */
     public function searchItem($cost, $percent, $name, $app_id)
     {
         try {
             $min_cost = ($cost / 100) * ((100 - $percent) / 100);
             $max_cost = ($cost / 100) * ((100 + $percent) / 100);
             $url = "https://api.opskins.com/ISales/Search/v1/?app=" . $app_id . "&search_item=" .
-                '"' . $name . '"' . "&min=" . $min_cost . "&max=" .
+                '"' . urlencode($name) . '"' . "&min=" . $min_cost . "&max=" .
                 $max_cost . "&key=" . $this->container->getParameter("ops_api_key");
             // create curl resource
-            $ch = curl_init();
 
-            // set url
-            curl_setopt($ch, CURLOPT_URL, $url);
+            $curl = curl_init();
 
-            //return the transfer as a string
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt_array($curl, array(
+                CURLOPT_URL => $url,
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => "",
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 30,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => "GET",
+            ));
 
-            // $output contains the output string
-            $output = curl_exec($ch);
+            $response = curl_exec($curl);
+            $err = curl_error($curl);
 
-            // close curl resource to free up system resources
-            curl_close($ch);
-
-            $output = json_decode($output, 1);
+            curl_close($curl);
+            print_r($err);
+            $output = json_decode($response, 1);
 
             return $output;
         } catch (\Exception $e) {
@@ -284,7 +296,84 @@ class OpsApiHelper
     }
 
     /**
-     * @return mixed
+     * @return mixed|string
+     */
+    public function getTableFromCsGoBack()
+    {
+        try {
+            $skin = "app=730_2&leftService=opskins.com&rightService=cs.money&leftServiceMinCount=&rightServiceMinCount=&leftServiceMaxCount=&rightServiceMaxCount=&leftUpdateTime=1&rightUpdateTime=&opskinsSales=10";
+            $url = "http://csgoback.net/ajax/comparison";
+            $ch = curl_init();
+
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                    'Cache-Control: no-store, no-cache, must-revalidate',
+                    'Cf-Ray: 3f22b12601848e67-DME',
+                    'Content-Type: application/x-www-form-urlencoded',
+                    'Date: ' . date('D, d M Y H:i:s', time() - 10800) . ' GMT',
+                    'Expires: Thu, 19 Nov 1981 08:52:00 GMT',
+                    'Pragma: no-cache',
+                    'Server: cloudflar',
+                    'Transfer-Encoding: chunked',
+                    'Connection: keep-alive',
+                    'Content-Encoding: gzip'
+                )
+            );
+
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $skin);
+            curl_setopt($ch, CURLOPT_COOKIE, "__cfduid=df40c2f5b5e053f3435d6a188031c6af91505581236; path=/; domain=.csgoback.net; HttpOnly; Expires=Sun, 25 Feb 2019 13:26:19 GMT;");
+            curl_setopt($ch, CURLOPT_COOKIE, "_ga=GA1.2.337131466.1505581226; path=/; domain=.csgoback.net; Expires=Tue, 19 Jan 2038 03:14:07 GMT;");
+            curl_setopt($ch, CURLOPT_COOKIE, "_gat=1; path=/; domain=.csgoback.net; Expires=Tue, 19 Jan 2038 03:14:07 GMT;");
+            curl_setopt($ch, CURLOPT_COOKIE, "_gid=GA1.2.35540825.1519978685; path=/; domain=.csgoback.net; Expires=Tue, 19 Jan 2038 03:14:07 GMT;");
+            curl_setopt($ch, CURLOPT_COOKIE, "_ym_isad=2; path=/; domain=.csgoback.net; Expires=Tue, 19 Jan 2038 03:14:07 GMT;");
+            curl_setopt($ch, CURLOPT_COOKIE, "_ym_uid=1510571535413303924; path=/; domain=.csgoback.net; Expires=Tue, 19 Jan 2038 03:14:07 GMT;");
+            curl_setopt($ch, CURLOPT_COOKIE, "PHPSESSID=e867f9d214c84242b9a4767d0d1ab5fd; path=/; domain=.csgoback.net; Expires=Tue, 19 Jan 2038 03:14:07 GMT;");
+            curl_setopt($ch, CURLOPT_COOKIE, "BACKSESSID=ae2894c9424eeacfba5e1fc979a3fc3e; path=/; domain=.csgoback.net; Expires=Tue, 19 Jan 2038 03:14:07 GMT;");
+            //curl_setopt($ch, CURLOPT_COOKIE, "BACKSESSID=acd5f15ca402f0cd9d88b7c9677f852c; path=/; domain=.csgoback.net; Expires=Tue, 19 Jan 2038 03:14:07 GMT;");
+
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+            $result = curl_exec($ch);
+            curl_close($ch);
+
+            return json_decode($result, 1);
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    /**
+     * @param $input_array
+     * @param $max_cost
+     * @param $min_cost
+     * @param $percent
+     *
+     * @return array|float|int|null
+     */
+    public function equalPriceCsGoBack($input_array, $max_cost, $min_cost, $percent)
+    {
+        try {
+            if ($input_array['opskins.com']['price'] <= $max_cost && $input_array['opskins.com']['price'] >= $min_cost) {
+                if (100 - ((($input_array['opskins.com']['price'] * 100) / $input_array['cs.money']['price'])) >= $percent) {
+                    return array(
+                        'name' => $input_array['name'],
+                        'ops.cost' => $input_array['opskins.com']['price'] * 100,
+                        'money.cost' => $input_array['cs.money']['price'] * 100
+                    );
+                } else {
+                    return null;
+                }
+            } else {
+                return null;
+            }
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    /**
+     * @return mixed|string
      */
     public function getInfoToBye() {
         try {
@@ -354,6 +443,7 @@ class OpsApiHelper
             curl_close($ch);
 
             return $output;
+
         } catch (\Exception $e) {
             return $e->getMessage();
         }
