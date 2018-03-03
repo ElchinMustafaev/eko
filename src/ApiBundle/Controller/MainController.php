@@ -34,13 +34,10 @@ class MainController extends Controller
                 print_r($ops_helper->EqualPrice($value, $return, 37));
             }
             **/
-            $return_from_db = $ops_helper->getInfoToBye();
-            print_r($return_from_db);
-            echo "\n";
-            $return = $ops_helper->searchItem($return_from_db["cost"], 50, $return_from_db['name'], "730_2");
+            $return = $ops_helper->searchItem(230, 1, "Overpass Pin", "730_2");
             //print_r($ops_helper->removeRecord($return_from_db));
             echo "\n";
-            print_r($return['response']);
+            print_r($return);
 
             return new JsonResponse();
         } catch (\Exception $e) {
