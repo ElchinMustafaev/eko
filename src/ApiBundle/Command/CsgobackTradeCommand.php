@@ -61,8 +61,12 @@ class CsgobackTradeCommand extends ContainerAwareCommand
                 print_r(count($result['result']) . "\n");
                 $i++;
                 if ($i == 10) {
+                    $old_cost = $max_cost;
                     $max_cost = $ops_helper->getBalance();
                     $i = 0;
+                    if ($old_cost != $max_cost) {
+                        $ops_helper->bot('Мой баланс сейчас ' . $max_cost);
+                    }
                 }
                 print_r($max_cost . "\n");
                 sleep(10);
