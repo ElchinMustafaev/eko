@@ -479,4 +479,33 @@ class OpsApiHelper
             return $e->getMessage();
         }
     }
+
+
+    public function bot($text)
+    {
+        try {
+            $curl = curl_init();
+
+            curl_setopt_array($curl, array(
+                CURLOPT_URL => "https://api.telegram.org/bot550447710:AAHF1lL93_7Zj3PjeVFBLfDcj9mYIMZFfN8/sendMessage?chat_id=-1001184076461&text=" . urlencode($text),
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => "",
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 30,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => "GET",
+                CURLOPT_HTTPHEADER => array(
+                    "cache-control: no-cache",
+                    "postman-token: 524fd55a-5caa-0eb1-9149-f7567b039b67"
+                ),
+            ));
+
+            $response = curl_exec($curl);
+
+            curl_close($curl);
+            return $response;
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
 }
