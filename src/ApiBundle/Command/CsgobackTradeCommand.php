@@ -30,7 +30,7 @@ class CsgobackTradeCommand extends ContainerAwareCommand
 
             $ops_helper = $this->getContainer()->get("api.ops.helper");
             $i = 0;
-            $ops_helper->bot('Я стартанул и мой баланс сейчас ' . $max_cost);
+            $ops_helper->bot('Я стартанул и мой баланс сейчас ' . $max_cost, "-1001184076461");
             while (true) {
                 $start_time = time();
                 $result = $ops_helper->getTableFromCsGoBack();
@@ -47,8 +47,8 @@ class CsgobackTradeCommand extends ContainerAwareCommand
                             $output->writeln($ops_helper->opsByeItem($item['response']));
                             $output->writeln("--------------------------------------\n");
                             $max_cost = $ops_helper->getBalance();
-                            $ops_helper->bot('Хей парни, я купил вот эту шмотку ' . $csgoback_result['name']);
-                            $ops_helper->bot('И у меня осталось ' . $max_cost);
+                            $ops_helper->bot('Хей парни, я купил вот эту шмотку ' . $csgoback_result['name'], "-1001184076461");
+                            $ops_helper->bot('И у меня осталось ' . $max_cost, "-1001184076461");
                             sleep(1);
                         } else {
                             $output->writeln("--------------------------------------\n");
@@ -65,7 +65,7 @@ class CsgobackTradeCommand extends ContainerAwareCommand
                     $max_cost = $ops_helper->getBalance();
                     $i = 0;
                     if ($old_cost != $max_cost) {
-                        $ops_helper->bot('Мой баланс сейчас ' . $max_cost);
+                        $ops_helper->bot('Мой баланс сейчас ' . $max_cost, "-1001184076461");
                     }
                 }
                 print_r($max_cost . "\n");

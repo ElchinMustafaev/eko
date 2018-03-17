@@ -15,28 +15,32 @@ class OpsTradeCommand extends ContainerAwareCommand
         $this
             ->setName('ops:trade')
             ->setDescription('bye items')
+            ->addOption('cost', null, InputOption::VALUE_REQUIRED, 'cost')
+            ->addOption('name', null, InputOption::VALUE_REQUIRED, 'name')
+            ->addOption('id', null, InputOption::VALUE_REQUIRED, 'item id')
+            ->addOption('p', null, InputOption::VALUE_REQUIRED, 'percent')
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try {
+            $cost = $input->getOption("cost");
+            $name = $input->getOption("name");
+            $id = $input->getOption("id");
+            $percent = $input->getOption('p');
+
             $ops_helper = $this->getContainer()->get("api.ops.helper");
 
-            $record_from_db = $ops_helper->getInfoToBye();
-
-            while (!empty($record_from_db)) {
-                $item = $ops_helper->searchItem($record_from_db["cost"], 2, $record_from_db['name'], "730_2");
-                $output->writeln('remove: ' . $record_from_db['name'] . ' - ' . $ops_helper->removeRecord($record_from_db));
-                if (!empty($item['response']['sales'])) {
-                    $output->writeln($ops_helper->opsByeItem($item['response']));
-                }
-
-                $record_from_db = $ops_helper->getInfoToBye();
+            $return = $ops_helper->getInfoFromCsGoBack($name, "");
+            $return = $return['result'];
+            if ($ops_helper->EqualPrice($name, $cost, $return, $percent)) {
+                $output = $ops_helper->opsByeItem_v2($id, $cost);
+                return $output;
             }
+
         } catch (\Exception $e) {
             $output->writeln($e->getMessage());
         }
     }
-
 }

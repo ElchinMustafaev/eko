@@ -14,15 +14,18 @@ class OpsDownloadCommand extends ContainerAwareCommand
     {
         $this
             ->setName('ops:test')
-            ->setDescription('Download Skins Base')
+            ->setDescription('test command')
+            ->addOption('p', null, InputOption::VALUE_REQUIRED, 'command')
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try {
+            $percent = $input->getOption("p");
             $ops_helper = $this->getContainer()->get("api.ops.helper");
-            print_r($ops_helper->socketConnection());
+            $ops_helper->bot("Я стартанул, мой баланс " . $ops_helper->getBalance() . ". И процент " . $percent, "-295278868");
+            $ops_helper->bot("Лол походу мне пизда: " . $ops_helper->socketConnection($percent), "-295278868");
         } catch (\Exception $e) {
             $output->writeln($e->getMessage());
             $output->writeln($e->getFile());

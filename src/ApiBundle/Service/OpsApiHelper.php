@@ -246,49 +246,28 @@ class OpsApiHelper
     }
 
     /**
-     * @param $input_array_from_db
+     * @param $ops_name
+     * @param $ops_price
      * @param $input_array_from_csGoBack
      * @param $percent
      *
-     * @return array|string
+     * @return bool|string
      */
-    public function EqualPrice($input_array_from_db, $input_array_from_csGoBack, $percent)
+    public function EqualPrice($ops_name, $ops_price, $input_array_from_csGoBack, $percent)
     {
         try {
             if (!empty($input_array_from_csGoBack)) {
                 foreach ($input_array_from_csGoBack as $key => $value) {
-                    if ($input_array_from_db['name'] === $key) {
-                        if (100 - (($input_array_from_db['cost'] / $value['price'])) >= $percent) {
-                            return $input_array_from_db;
+                    if ($ops_name === $key) {
+                        if (100 - ($ops_price / $value['price']) >= $percent) {
+                            return true;
                         } else {
-                            $db_old_record = $this
-                                ->em
-                                ->getRepository("ApiBundle:Ops")
-                                ->findOneBy(
-                                    array(
-                                        "name" => $input_array_from_db['name'],
-                                    )
-                                );
-                            $db_old_record->setFlag(true);
-                            $this->em->persist($db_old_record);
-                            $this->em->flush();
-                            unset($db_old_record);
+                            return false;
                         }
                     }
                 }
             } else {
-                $db_old_record = $this
-                    ->em
-                    ->getRepository("ApiBundle:Ops")
-                    ->findOneBy(
-                        array(
-                            "name" => $input_array_from_db['name'],
-                        )
-                    );
-                $db_old_record->setFlag(true);
-                $this->em->persist($db_old_record);
-                $this->em->flush();
-                unset($db_old_record);
+                return false;
             }
         } catch (\Exception $e) {
             return $e->getMessage();
@@ -454,6 +433,42 @@ class OpsApiHelper
     }
 
     /**
+     * @param $id
+     * @param $cost
+     *
+     * @return mixed|string
+     */
+    public function opsByeItem_v2($id, $cost)
+    {
+        try {
+            $url = "https://api.opskins.com/ISales/BuyItems/v1/";
+            $ch = curl_init();
+
+            $item =
+                "key=" . $this->container->getParameter("ops_api_key") .
+                "&saleids=" . $id . "&total=" . $cost;
+
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                    'Content-Type: application/x-www-form-urlencoded',
+                )
+            );
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $item);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+            $output = curl_exec($ch);
+
+            curl_close($ch);
+
+            return $output;
+
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    /**
      * @return float|int|mixed|string
      */
     public function getBalance()
@@ -489,16 +504,17 @@ class OpsApiHelper
 
     /**
      * @param $text
+     * @param $id_chat
      *
      * @return mixed|string
      */
-    public function bot($text)
+    public function bot($text, $id_chat)
     {
         try {
             $curl = curl_init();
 
             curl_setopt_array($curl, array(
-                CURLOPT_URL => "https://api.telegram.org/bot550447710:AAHF1lL93_7Zj3PjeVFBLfDcj9mYIMZFfN8/sendMessage?chat_id=-1001184076461&text=" . urlencode($text),
+                CURLOPT_URL => "https://api.telegram.org/bot550447710:AAHF1lL93_7Zj3PjeVFBLfDcj9mYIMZFfN8/sendMessage?chat_id=" . $id_chat . "&text=" . urlencode($text),
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_ENCODING => "",
                 CURLOPT_MAXREDIRS => 10,
@@ -521,9 +537,11 @@ class OpsApiHelper
     }
 
     /**
-     * @return bool|string
+     * @param $percent
+     *
+     * @return string
      */
-    public function socketConnection()
+    public function socketConnection($percent)
     {
         try {
             set_time_limit(0);
@@ -558,12 +576,24 @@ class OpsApiHelper
 
             echo "Читаем ответ:\n\n";
             while ($out = socket_read($socket, 16364)) {
-                print_r($out);
+                //print_r($out);
+                if (!empty($out)) {
+                    $out = json_decode($out, 1);
+                    foreach ($out as $key => $value) {
+                        system(
+                            "php bin/console ops:trade --cost=" . $value["amount"]
+                            . " --name=" . urldecode($value["market_name"]
+                                . " --id=" . $value["item_id"])
+                                    . " --p=" . $percent,
+                            $result
+                        );
+                    }
+                }
             }
 
             echo "Закрываем сокет...";
             socket_close($socket);
-            echo "OK.\n\n";
+            return "OK.\n\n";
 
 
         } catch (\Exception $e) {
