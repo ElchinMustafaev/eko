@@ -418,7 +418,11 @@ class OpsApiHelper
         }
     }
 
-
+    /**
+     * @param $item_list
+     *
+     * @return mixed|string
+     */
     public function opsByeItem($item_list)
     {
         try {
@@ -449,6 +453,9 @@ class OpsApiHelper
         }
     }
 
+    /**
+     * @return float|int|mixed|string
+     */
     public function getBalance()
     {
         try {
@@ -480,7 +487,11 @@ class OpsApiHelper
         }
     }
 
-
+    /**
+     * @param $text
+     *
+     * @return mixed|string
+     */
     public function bot($text)
     {
         try {
@@ -504,6 +515,29 @@ class OpsApiHelper
 
             curl_close($curl);
             return $response;
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    /**
+     * @return bool|string
+     */
+    public function socketConnection()
+    {
+        try {
+            set_time_limit(0);
+            ob_implicit_flush();
+            $address = '195.201.100.83';
+            $socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
+            print_r(socket_bind($socket, $address, 5000));
+            socket_listen($socket);
+            $new_socket = socket_accept($socket);
+            $string_from_socket = socket_read($new_socket, "\0", PHP_NORMAL_READ);
+            if ($string_from_socket == "") {
+                return socket_strerror(socket_last_error($socket));
+            }
+            return $string_from_socket;
         } catch (\Exception $e) {
             return $e->getMessage();
         }

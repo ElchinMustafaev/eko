@@ -13,7 +13,7 @@ class OpsDownloadCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('ops:download')
+            ->setName('ops:test')
             ->setDescription('Download Skins Base')
         ;
     }
@@ -21,13 +21,8 @@ class OpsDownloadCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try {
-            $start = time();
             $ops_helper = $this->getContainer()->get("api.ops.helper");
-            $return = $ops_helper->downloadOpsLowCost(730);
-            $return = $ops_helper->writeInDb($return);
-            $time = time() - $start;
-            $output->writeln($time / 60);
-            $output->writeln(json_encode($return));
+            print_r($ops_helper->socketConnection());
         } catch (\Exception $e) {
             $output->writeln($e->getMessage());
             $output->writeln($e->getFile());
