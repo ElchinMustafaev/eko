@@ -529,17 +529,49 @@ class OpsApiHelper
             set_time_limit(0);
             ob_implicit_flush();
             $address = '195.201.100.83';
+
+            error_reporting(E_ALL);
+
+            echo "Соединение TCP/IP\n";
+
+            /* Получаем порт сервиса WWW. */
+            $service_port = 5000;
+
+            /* Получаем  IP адрес целевого хоста. */
+
+
+            /* Создаём  TCP/IP сокет. */
             $socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
-            print_r(socket_bind($socket, $address, 5000));
-            socket_listen($socket);
-            $new_socket = socket_accept($socket);
-            $string_from_socket = socket_read($new_socket, "\0", PHP_NORMAL_READ);
-            if ($string_from_socket == "") {
-                return socket_strerror(socket_last_error($socket));
+            if ($socket === false) {
+                echo "Не удалось выполнить socket_create(): причина: " . socket_strerror(socket_last_error()) . "\n";
+            } else {
+                echo "OK.\n";
             }
-            return $string_from_socket;
+
+            echo "Пытаемся соединиться с '$address' на порту '$service_port'...";
+            $result = socket_connect($socket, $address, $service_port);
+            if ($result === false) {
+                echo "Не удалось выполнить socket_connect().\nПричина: ($result) " . socket_strerror(socket_last_error($socket)) . "\n";
+            } else {
+                echo "OK.\n";
+            }
+
+            echo "Читаем ответ:\n\n";
+            while ($out = socket_read($socket, 16364)) {
+                print_r($out);
+            }
+
+            echo "Закрываем сокет...";
+            socket_close($socket);
+            echo "OK.\n\n";
+
+
         } catch (\Exception $e) {
             return $e->getMessage();
         }
     }
+
+
+
+
 }
