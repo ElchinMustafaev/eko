@@ -73,7 +73,7 @@ class OpsTradeCommand extends ContainerAwareCommand
                 "output info" => $output_info_about_trade,
             );
             $logger->info(json_encode($log_array));
-
+            return "skin with id: " . $id . " processed";
             } catch (\Exception $e) {
                 $logger->error(json_encode(
                         array(
