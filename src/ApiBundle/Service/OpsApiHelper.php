@@ -224,15 +224,14 @@ class OpsApiHelper
 
             curl_setopt($ch, CURLOPT_POST, 1);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $skin);
-            curl_setopt($ch, CURLOPT_COOKIE, "__cfduid=d0a88be536b85d8a328a17db2d8c0c3f61519041450; path=/; domain=.csgoback.net; HttpOnly; Expires=Sun, 25 Feb 2019 13:26:19 GMT;");
-            curl_setopt($ch, CURLOPT_COOKIE, "_ga=GA1.2.1093312345.1519041452; path=/; domain=.csgoback.net; Expires=Tue, 19 Jan 2038 03:14:07 GMT;");
+            curl_setopt($ch, CURLOPT_COOKIE, "__cfduid=df40c2f5b5e053f3435d6a188031c6af91505581236; path=/; domain=.csgoback.net; HttpOnly; Expires=Sun, 25 Feb 2019 13:26:19 GMT;");
+            curl_setopt($ch, CURLOPT_COOKIE, "_ga=GA1.2.337131466.1505581226; path=/; domain=.csgoback.net; Expires=Tue, 19 Jan 2038 03:14:07 GMT;");
             curl_setopt($ch, CURLOPT_COOKIE, "_gat=1; path=/; domain=.csgoback.net; Expires=Tue, 19 Jan 2038 03:14:07 GMT;");
-            curl_setopt($ch, CURLOPT_COOKIE, "_gid=GA1.2.1003775563.1519583817; path=/; domain=.csgoback.net; Expires=Tue, 19 Jan 2038 03:14:07 GMT;");
-            curl_setopt($ch, CURLOPT_COOKIE, "_ym_isad=1; path=/; domain=.csgoback.net; Expires=Tue, 19 Jan 2038 03:14:07 GMT;");
-            curl_setopt($ch, CURLOPT_COOKIE, "_ym_uid=1519041452185677183; path=/; domain=.csgoback.net; Expires=Tue, 19 Jan 2038 03:14:07 GMT;");
-            curl_setopt($ch, CURLOPT_COOKIE, "PHPSESSID=7d51fba524435af3de7bc9bf51c901f1; path=/; domain=.csgoback.net; Expires=Tue, 19 Jan 2038 03:14:07 GMT;");
-            curl_setopt($ch, CURLOPT_COOKIE, "BACKSESSID=acd5f15ca402f0cd9d88b7c9677f852c; path=/; domain=.csgoback.net; Expires=Tue, 19 Jan 2038 03:14:07 GMT;");
-            curl_setopt($ch, CURLOPT_COOKIE, "BACKSESSID=acd5f15ca402f0cd9d88b7c9677f852c; path=/; domain=.csgoback.net; Expires=Tue, 19 Jan 2038 03:14:07 GMT;");
+            curl_setopt($ch, CURLOPT_COOKIE, "_gid=GA1.2.35540825.1519978685; path=/; domain=.csgoback.net; Expires=Tue, 19 Jan 2038 03:14:07 GMT;");
+            curl_setopt($ch, CURLOPT_COOKIE, "_ym_isad=2; path=/; domain=.csgoback.net; Expires=Tue, 19 Jan 2038 03:14:07 GMT;");
+            curl_setopt($ch, CURLOPT_COOKIE, "_ym_uid=1510571535413303924; path=/; domain=.csgoback.net; Expires=Tue, 19 Jan 2038 03:14:07 GMT;");
+            curl_setopt($ch, CURLOPT_COOKIE, "PHPSESSID=e867f9d214c84242b9a4767d0d1ab5fd; path=/; domain=.csgoback.net; Expires=Tue, 19 Jan 2038 03:14:07 GMT;");
+            curl_setopt($ch, CURLOPT_COOKIE, "BACKSESSID=ae2894c9424eeacfba5e1fc979a3fc3e; path=/; domain=.csgoback.net; Expires=Tue, 19 Jan 2038 03:14:07 GMT;");
 
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
@@ -582,7 +581,7 @@ class OpsApiHelper
                         system(
                             "php bin/console ops:trade --cost=" . $value["amount"]
                             . " --name=" . urldecode($value["market_name"])
-                                . " --id=" . $value["item_id"]
+                                . " --id=" . $value["id"]
                                     . " --p=" . $percent,
                             $result
                         );
