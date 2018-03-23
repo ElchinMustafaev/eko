@@ -2,6 +2,7 @@
 
 namespace ApiBundle\Command;
 
+use ApiBundle\Entity\Balance;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -22,15 +23,55 @@ class OpsDownloadCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try {
-            $percent = $input->getOption("p");
-            $ops_helper = $this->getContainer()->get("api.ops.helper");
-            $ops_helper->bot("Я стартанул, мой баланс " . $ops_helper->getBalance() . ". И процент " . $percent, "-295278868");
-            $return = $ops_helper->socketConnection($percent);
-            $ops_helper->bot("Лол походу мне пизда: " . $return, "-295278868");
+            $logger = $this->getContainer()->get('monolog.logger.inputInfo');
+
+            try {
+                $percent = $input->getOption("p");
+                $ops_helper = $this->getContainer()->get("api.ops.helper");
+                $new_balance = $ops_helper->getBalance();
+
+
+                $em = $this
+                    ->getContainer()
+                    ->get("doctrine")
+                    ->getManager();
+
+                $balance = $this
+                    ->getContainer()
+                    ->get("doctrine")
+                    ->getRepository("ApiBundle:Balance")
+                    ->findOneBy(
+                        array(
+                            "apiKey" => $this->getContainer()->getParameter("ops_api_key"),
+                        )
+                    );
+
+                $ops_helper->bot("Я стартанул, мой баланс " . $new_balance . ". И процент " . $percent, "-295278868");
+
+                if (empty($balance)) {
+                    $balance = new Balance();
+                    $balance->setApiKey($this->getContainer()->getParameter("ops_api_key"));
+                    $balance->setBalance($new_balance * 100);
+                    $em->persist($balance);
+                    $em->flush();
+                } else {
+                    $balance->setBalance($new_balance * 100);
+                    $em->persist($balance);
+                    $em->flush();
+                }
+
+                $return = $ops_helper->socketConnection($percent);
+                $ops_helper->bot("Лол походу мне пизда: " . $return, "-295278868");
+            } catch (\Exception $e) {
+                $output_arr = array(
+                    $e->getMessage(),
+                    $e->getFile(),
+                    $e->getLine(),
+                );
+                $logger->error(json_encode($output_arr));
+            }
         } catch (\Exception $e) {
-            $output->writeln($e->getMessage());
-            $output->writeln($e->getFile());
-            $output->writeln($e->getLine());
+            echo $e->getMessage();
         }
     }
 

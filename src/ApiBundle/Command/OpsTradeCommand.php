@@ -40,8 +40,29 @@ class OpsTradeCommand extends ContainerAwareCommand
                 $output_info_about_trade = "false";
                 $equal_price = $ops_helper->EqualPrice($name, $cost, $return, $percent);
             if ($equal_price) {
-                $output = $ops_helper->opsByeItem_v2($id, $cost);
-                $output_info_about_trade = $output;
+                $balance = $this
+                    ->getContainer()
+                    ->get("doctrine")
+                    ->getRepository("ApiBundle:Balance")
+                    ->findOneBy(
+                        array(
+                            "apiKey" => $this->getContainer()->getParameter("ops_api_key")
+                        )
+                    );
+                if ($balance->getBalance() >= $cost) {
+                    $output = $ops_helper->opsByeItem_v2($id, $cost);
+                    $output_info_about_trade = $output;
+                    $balance->setBalance($ops_helper->getBalance() * 100);
+                    
+                    $em = $this
+                        ->getContainer()
+                        ->get("doctrine")
+                        ->getManager();
+                    $em->persist($balance);
+                    $em->flush();
+                } else {
+                    $output_info_about_trade = "Не хватило денег";
+                }
             }
             $log_array = array(
                 "cost" => $cost,

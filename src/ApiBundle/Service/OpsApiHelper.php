@@ -549,7 +549,6 @@ class OpsApiHelper
             } catch (\Exception $e) {
                 echo $e->getMessage();
             }
-            $logger->info("Start connection");
             set_time_limit(0);
             ob_implicit_flush();
             $address = '195.201.100.83';
@@ -578,6 +577,7 @@ class OpsApiHelper
                 //print_r($out);
                 if (!empty($out)) {
                     $out = json_decode($out, 1);
+                    $logger->info("Ответ получен");
                     foreach ($out as $key => $value) {
                         system(
                             "php bin/console ops:trade --cost=" . $value["amount"]
@@ -592,7 +592,7 @@ class OpsApiHelper
             }
 
             socket_close($socket);
-            $logger->info("End connection");
+            $logger->info("Разрыв соединения");
             return "OK.\n\n";
 
 
