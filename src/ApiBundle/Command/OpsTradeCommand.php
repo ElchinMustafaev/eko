@@ -53,7 +53,7 @@ class OpsTradeCommand extends ContainerAwareCommand
                     $output = $ops_helper->opsByeItem_v2($id, $cost);
                     $output_info_about_trade = $output;
                     $balance->setBalance($ops_helper->getBalance() * 100);
-                    
+
                     $em = $this
                         ->getContainer()
                         ->get("doctrine")
