@@ -2,6 +2,8 @@
 
 namespace ApiBundle\Command;
 
+use Monolog\Handler\LogglyHandler;
+use Monolog\Logger;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -73,6 +75,11 @@ class OpsTradeCommand extends ContainerAwareCommand
                 "output info" => $output_info_about_trade,
             );
             $logger->info(json_encode($log_array));
+
+            $log = new Logger("Ops Trade Command");
+            $log->pushHandler(new LogglyHandler('c08914a4-b0a9-469e-afad-b1443759875b', Logger::INFO));
+
+            $log->addInfo(json_encode($log_array));
             return "skin with id: " . $id . " processed";
             } catch (\Exception $e) {
                 $logger->error(json_encode(

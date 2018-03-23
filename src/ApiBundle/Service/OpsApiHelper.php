@@ -8,6 +8,8 @@
 
 namespace ApiBundle\Service;
 use ApiBundle\Entity\Ops;
+use Monolog\Handler\LogglyHandler;
+use Monolog\Logger;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -553,9 +555,11 @@ class OpsApiHelper
             $address = '195.201.100.83';
 
             error_reporting(E_ALL);
+            $log = new Logger("Php Worker");
+            $log->pushHandler(new LogglyHandler('c08914a4-b0a9-469e-afad-b1443759875b', Logger::INFO));
 
             $logger->info("Соединение TCP/IP");
-
+            $log->addInfo("Соединение TCP/IP");
             /* Получаем порт сервиса WWW. */
             $service_port = 5001;
 
@@ -563,12 +567,14 @@ class OpsApiHelper
             $socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
             if ($socket === false) {
                 $logger->error("Не удалось выполнить socket_create(): причина: " . socket_strerror(socket_last_error()) . "\n");
+                $log->addError("Не удалось выполнить socket_create(): причина: " . socket_strerror(socket_last_error()) . "\n");
             }
 
             $logger->info("Пытаемся соединиться с '$address' на порту '$service_port'...");
             $result = socket_connect($socket, $address, $service_port);
             if ($result === false) {
                 $logger->error("Не удалось выполнить socket_connect(). Причина: ($result) " . socket_strerror(socket_last_error($socket)) . "\n");
+                $log->addError("Не удалось выполнить socket_connect(). Причина: ($result) " . socket_strerror(socket_last_error($socket)) . "\n");
             }
 
             $logger->info("Читаем ответ");
@@ -578,6 +584,7 @@ class OpsApiHelper
                 if (!empty($out)) {
                     //print_r($out);
                     $logger->info("Ответ получен");
+                    $log->addInfo("Ответ получен");
                     foreach ($out as $key => $value) {
                         system(
                             "php bin/console ops:trade --cost=" . $value["amount"]
@@ -592,7 +599,8 @@ class OpsApiHelper
 
             socket_close($socket);
             $logger->info("Разрыв соединения");
-            return "OK.\n\n";
+            $log->addError("Разрыв соединения");
+            return "Что-то случилось загляни в логи";
 
 
         } catch (\Exception $e) {
