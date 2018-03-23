@@ -25,7 +25,8 @@ class OpsDownloadCommand extends ContainerAwareCommand
             $percent = $input->getOption("p");
             $ops_helper = $this->getContainer()->get("api.ops.helper");
             $ops_helper->bot("Я стартанул, мой баланс " . $ops_helper->getBalance() . ". И процент " . $percent, "-295278868");
-            $ops_helper->bot("Лол походу мне пизда: " . $ops_helper->socketConnection($percent), "-295278868");
+            $return = $ops_helper->socketConnection($percent);
+            $ops_helper->bot("Лол походу мне пизда: " . $return, "-295278868");
         } catch (\Exception $e) {
             $output->writeln($e->getMessage());
             $output->writeln($e->getFile());

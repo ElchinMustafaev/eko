@@ -544,37 +544,36 @@ class OpsApiHelper
     public function socketConnection($percent)
     {
         try {
+            try {
+                $logger = $this->container->get('monolog.logger.inputInfo');
+            } catch (\Exception $e) {
+                echo $e->getMessage();
+            }
+            $logger->info("Start connection");
             set_time_limit(0);
             ob_implicit_flush();
             $address = '195.201.100.83';
 
             error_reporting(E_ALL);
 
-            echo "Соединение TCP/IP\n";
+            $logger->info("Соединение TCP/IP");
 
             /* Получаем порт сервиса WWW. */
             $service_port = 5000;
 
-            /* Получаем  IP адрес целевого хоста. */
-
-
             /* Создаём  TCP/IP сокет. */
             $socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
             if ($socket === false) {
-                echo "Не удалось выполнить socket_create(): причина: " . socket_strerror(socket_last_error()) . "\n";
-            } else {
-                echo "OK.\n";
+                $logger->error("Не удалось выполнить socket_create(): причина: " . socket_strerror(socket_last_error()) . "\n");
             }
 
-            echo "Пытаемся соединиться с '$address' на порту '$service_port'...";
+            $logger->info("Пытаемся соединиться с '$address' на порту '$service_port'...");
             $result = socket_connect($socket, $address, $service_port);
             if ($result === false) {
-                echo "Не удалось выполнить socket_connect().\nПричина: ($result) " . socket_strerror(socket_last_error($socket)) . "\n";
-            } else {
-                echo "OK.\n";
+                $logger->error("Не удалось выполнить socket_connect(). Причина: ($result) " . socket_strerror(socket_last_error($socket)) . "\n");
             }
 
-            echo "Читаем ответ:\n\n";
+            $logger->info("Читаем ответ");
             while ($out = socket_read($socket, 16364)) {
                 //print_r($out);
                 if (!empty($out)) {
@@ -582,17 +581,18 @@ class OpsApiHelper
                     foreach ($out as $key => $value) {
                         system(
                             "php bin/console ops:trade --cost=" . $value["amount"]
-                            . " --name=" . urldecode($value["market_name"]
-                                . " --id=" . $value["item_id"])
+                            . " --name=" . urldecode($value["market_name"])
+                                . " --id=" . $value["item_id"]
                                     . " --p=" . $percent,
                             $result
                         );
+                        $logger->info($result);
                     }
                 }
             }
 
-            echo "Закрываем сокет...";
             socket_close($socket);
+            $logger->info("End connection");
             return "OK.\n\n";
 
 

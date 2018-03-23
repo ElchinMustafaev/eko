@@ -25,22 +25,46 @@ class OpsTradeCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try {
-            $cost = $input->getOption("cost");
-            $name = $input->getOption("name");
-            $id = $input->getOption("id");
-            $percent = $input->getOption('p');
+            $logger = $this->getContainer()->get('monolog.logger.trade');
 
-            $ops_helper = $this->getContainer()->get("api.ops.helper");
+            try {
+                $cost = $input->getOption("cost");
+                $name = $input->getOption("name");
+                $id = $input->getOption("id");
+                $percent = $input->getOption('p');
 
-            $return = $ops_helper->getInfoFromCsGoBack($name, "");
-            $return = $return['result'];
-            if ($ops_helper->EqualPrice($name, $cost, $return, $percent)) {
+                $ops_helper = $this->getContainer()->get("api.ops.helper");
+
+                $return = $ops_helper->getInfoFromCsGoBack($name, "");
+                $return = $return['result'];
+                $output_info_about_trade = "false";
+                $equal_price = $ops_helper->EqualPrice($name, $cost, $return, $percent);
+            if ($equal_price) {
                 $output = $ops_helper->opsByeItem_v2($id, $cost);
-                return $output;
+                $output_info_about_trade = $output;
             }
+            $log_array = array(
+                "cost" => $cost,
+                "name" => $name,
+                "id" => $id,
+                "percent" => $percent,
+                "equal price" => $equal_price,
+                "output info" => $output_info_about_trade,
+            );
+            $logger->info(json_encode($log_array));
 
+            } catch (\Exception $e) {
+                $logger->error(json_encode(
+                        array(
+                            $e->getMessage(),
+                            $e->getFile(),
+                            $e->getLine()
+                        )
+                    )
+                );
+            }
         } catch (\Exception $e) {
-            $output->writeln($e->getMessage());
+            echo $e->getMessage();
         }
     }
 }

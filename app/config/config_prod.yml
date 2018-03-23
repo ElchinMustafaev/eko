@@ -20,3 +20,13 @@ monolog:
         console:
             type: console
             process_psr_3_messages: false
+        input_info:
+            type: stream
+            path: '%kernel.logs_dir%/input_info_prod.log'
+            level: info
+            channels: [inputInfo]
+        trade:
+            type: stream
+            path: '%kernel.logs_dir%/trade_prod.log'
+            level: info
+            channels: [trade]
