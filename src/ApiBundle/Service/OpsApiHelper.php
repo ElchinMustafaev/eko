@@ -557,7 +557,7 @@ class OpsApiHelper
             $logger->info("Соединение TCP/IP");
 
             /* Получаем порт сервиса WWW. */
-            $service_port = 5000;
+            $service_port = 5001;
 
             /* Создаём  TCP/IP сокет. */
             $socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
@@ -572,20 +572,20 @@ class OpsApiHelper
             }
 
             $logger->info("Читаем ответ");
+            $stdout = fopen('php://stdout', 'w');
             while ($out = socket_read($socket, 16364)) {
-                //print_r($out);
+                $out = json_decode($out, 1);
                 if (!empty($out)) {
-                    $out = json_decode($out, 1);
+                    //print_r($out);
                     $logger->info("Ответ получен");
                     foreach ($out as $key => $value) {
                         system(
                             "php bin/console ops:trade --cost=" . $value["amount"]
-                            . " --name=" . urldecode($value["market_name"])
+                            . " --name=" . $value["market_name"]
                                 . " --id=" . $value["id"]
                                     . " --p=" . $percent,
-                            $result
+                            $stdout
                         );
-                        $logger->info($result);
                     }
                 }
             }

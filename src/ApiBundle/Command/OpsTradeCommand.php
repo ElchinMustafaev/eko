@@ -29,7 +29,7 @@ class OpsTradeCommand extends ContainerAwareCommand
 
             try {
                 $cost = $input->getOption("cost");
-                $name = $input->getOption("name");
+                $name = urldecode($input->getOption("name"));
                 $id = $input->getOption("id");
                 $percent = $input->getOption('p');
 
