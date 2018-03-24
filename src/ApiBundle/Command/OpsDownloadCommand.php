@@ -16,7 +16,8 @@ class OpsDownloadCommand extends ContainerAwareCommand
         $this
             ->setName('ops:test')
             ->setDescription('test command')
-            ->addOption('p', null, InputOption::VALUE_REQUIRED, 'command')
+            ->addOption('p', null, InputOption::VALUE_REQUIRED, 'percent')
+            ->addOption('mc', null, InputOption::VALUE_REQUIRED, 'min cost')
         ;
     }
 
@@ -27,6 +28,7 @@ class OpsDownloadCommand extends ContainerAwareCommand
 
             try {
                 $percent = $input->getOption("p");
+                $min_cost = $input->getOption("mc");
                 $ops_helper = $this->getContainer()->get("api.ops.helper");
                 $new_balance = $ops_helper->getBalance();
 
@@ -46,7 +48,11 @@ class OpsDownloadCommand extends ContainerAwareCommand
                         )
                     );
 
-                $ops_helper->bot("Я стартанул, мой баланс " . $new_balance . ". И процент " . $percent, "-295278868");
+                $ops_helper
+                    ->bot(
+                        "Я стартанул, мой баланс " . $new_balance . ". И процент " . $percent . ' минимальная стоимость: ' . $min_cost,
+                        "-295278868"
+                    );
 
                 if (empty($balance)) {
                     $balance = new Balance();
@@ -60,7 +66,7 @@ class OpsDownloadCommand extends ContainerAwareCommand
                     $em->flush();
                 }
 
-                $return = $ops_helper->socketConnection($percent);
+                $return = $ops_helper->socketConnection($percent, $min_cost);
                 $ops_helper->bot("Лол походу мне пизда: " . $return, "-295278868");
             } catch (\Exception $e) {
                 $output_arr = array(

@@ -30,6 +30,7 @@ class OpsTradeCommand extends ContainerAwareCommand
             $logger = $this->getContainer()->get('monolog.logger.trade');
 
             try {
+                $time_start = microtime();
                 $cost = $input->getOption("cost");
                 $name = urldecode($input->getOption("name"));
                 $id = $input->getOption("id");
@@ -40,6 +41,7 @@ class OpsTradeCommand extends ContainerAwareCommand
                 $return = $ops_helper->getInfoFromCsGoBack($name, "");
                 $return = $return['result'];
                 $output_info_about_trade = "false";
+                $tag = "don't buy";
                 $equal_price = $ops_helper->EqualPrice($name, $cost, $return, $percent);
             if ($equal_price) {
                 $balance = $this
@@ -62,8 +64,9 @@ class OpsTradeCommand extends ContainerAwareCommand
                         ->getManager();
                     $em->persist($balance);
                     $em->flush();
+                    $tag = "buy";
                 } else {
-                    $output_info_about_trade = "Не хватило денег";
+                    $output_info_about_trade = "Not enough money";
                 }
             }
             $log_array = array(
@@ -73,6 +76,7 @@ class OpsTradeCommand extends ContainerAwareCommand
                 "percent" => $percent,
                 "equal price" => $equal_price,
                 "output info" => $output_info_about_trade,
+                "tag" => $tag,
             );
             $logger->info(json_encode($log_array));
 
@@ -80,6 +84,13 @@ class OpsTradeCommand extends ContainerAwareCommand
             $log->pushHandler(new LogglyHandler('c08914a4-b0a9-469e-afad-b1443759875b', Logger::INFO));
 
             $log->addInfo(json_encode($log_array));
+
+            $time_array = array(
+                "masage" => "Work time of trade command in micro: " . microtime() - $time_start,
+                "tag" => "time",
+            );
+
+            $log->addInfo(json_encode($time_array));
             return "skin with id: " . $id . " processed";
             } catch (\Exception $e) {
                 $logger->error(json_encode(

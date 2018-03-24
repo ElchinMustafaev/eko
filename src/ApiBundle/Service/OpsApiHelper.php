@@ -542,7 +542,7 @@ class OpsApiHelper
      *
      * @return string
      */
-    public function socketConnection($percent)
+    public function socketConnection($percent, $min_cost)
     {
         try {
             try {
@@ -585,15 +585,24 @@ class OpsApiHelper
                     //print_r($out);
                     $logger->info("Ответ получен");
                     $log->addInfo("Ответ получен");
+                    $time_start = microtime();
                     foreach ($out as $key => $value) {
-                        system(
-                            "php bin/console ops:trade --cost=" . $value["amount"]
-                            . " --name=" . $value["market_name"]
+                        if ($value["amount"] >= $min_cost) {
+                            system(
+                                "php bin/console ops:trade --cost=" . $value["amount"]
+                                . " --name=" . $value["market_name"]
                                 . " --id=" . $value["id"]
-                                    . " --p=" . $percent,
-                            $stdout
-                        );
+                                . " --p=" . $percent . "&",
+                                $stdout
+                            );
+                        }
                     }
+                    $time_end = array(
+                        "msg" => "Work time Php Worker in micro: " . microtime() - $time_start,
+                        "tag" => "time",
+                    );
+
+                    $log->addInfo(json_encode($time_end));
                 }
             }
 
