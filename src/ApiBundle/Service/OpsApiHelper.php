@@ -598,7 +598,7 @@ class OpsApiHelper
                         }
                     }
                     $time_end = array(
-                        "msg" => "Work time Php Worker in micro: " . microtime(true) - $time_start,
+                        "msg" => microtime(true) - $time_start,
                         "tag" => "time",
                     );
 

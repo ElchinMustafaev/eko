@@ -86,7 +86,7 @@ class OpsTradeCommand extends ContainerAwareCommand
             $log->addInfo(json_encode($log_array));
 
             $time_array = array(
-                "masage" => "Work time of trade command in micro: " . microtime(true) - $time_start,
+                "masage" => microtime(true) - $time_start,
                 "tag" => "time",
             );
 
