@@ -585,7 +585,7 @@ class OpsApiHelper
                     //print_r($out);
                     $logger->info("Ответ получен");
                     $log->addInfo("Ответ получен");
-                    $time_start = microtime();
+                    $time_start = microtime(true);
                     foreach ($out as $key => $value) {
                         if ($value["amount"] >= $min_cost) {
                             system(
@@ -598,7 +598,7 @@ class OpsApiHelper
                         }
                     }
                     $time_end = array(
-                        "msg" => "Work time Php Worker in micro: " . microtime() - $time_start,
+                        "msg" => "Work time Php Worker in micro: " . microtime(true) - $time_start,
                         "tag" => "time",
                     );
 

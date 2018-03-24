@@ -30,7 +30,7 @@ class OpsTradeCommand extends ContainerAwareCommand
             $logger = $this->getContainer()->get('monolog.logger.trade');
 
             try {
-                $time_start = microtime();
+                $time_start = microtime(true);
                 $cost = $input->getOption("cost");
                 $name = urldecode($input->getOption("name"));
                 $id = $input->getOption("id");
@@ -86,7 +86,7 @@ class OpsTradeCommand extends ContainerAwareCommand
             $log->addInfo(json_encode($log_array));
 
             $time_array = array(
-                "masage" => "Work time of trade command in micro: " . microtime() - $time_start,
+                "masage" => "Work time of trade command in micro: " . microtime(true) - $time_start,
                 "tag" => "time",
             );
 
