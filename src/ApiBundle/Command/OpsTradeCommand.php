@@ -69,6 +69,7 @@ class OpsTradeCommand extends ContainerAwareCommand
                         }
 
                     } else {
+                        $log->addInfo(json_encode($item['response']['sales'][0]));
                         $output_info_about_trade = "so slow";
                     }
 
