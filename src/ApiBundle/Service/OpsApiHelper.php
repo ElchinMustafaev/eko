@@ -259,7 +259,7 @@ class OpsApiHelper
         try {
             $logger = $this->container->get('monolog.logger.inputInfo');
             $log = new Logger("Php Worker");
-            $log->pushHandler(new LogglyHandler('c08914a4-b0a9-469e-afad-b1443759875b', Logger::INFO));
+            $log->pushHandler(new LogglyHandler('1827242c-b940-423b-ab53-cf4fc8a77d2a', Logger::INFO));
 
             try {
                 if (!empty($input_array_from_csGoBack)) {
@@ -569,7 +569,7 @@ class OpsApiHelper
 
             error_reporting(E_ALL);
             $log = new Logger("Php Worker");
-            $log->pushHandler(new LogglyHandler('c08914a4-b0a9-469e-afad-b1443759875b', Logger::INFO));
+            $log->pushHandler(new LogglyHandler('1827242c-b940-423b-ab53-cf4fc8a77d2a', Logger::INFO));
 
             $logger->info("Соединение TCP/IP");
             $log->addInfo("Соединение TCP/IP");
