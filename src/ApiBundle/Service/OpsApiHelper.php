@@ -257,21 +257,34 @@ class OpsApiHelper
     public function EqualPrice($ops_name, $ops_price, $input_array_from_csGoBack, $percent)
     {
         try {
-            if (!empty($input_array_from_csGoBack)) {
-                foreach ($input_array_from_csGoBack as $key => $value) {
-                    if ($ops_name === $key) {
-                        if (100 - ($ops_price / $value['price']) >= $percent) {
-                            return true;
-                        } else {
-                            return false;
+            $logger = $this->container->get('monolog.logger.inputInfo');
+            $log = new Logger("Php Worker");
+            $log->pushHandler(new LogglyHandler('c08914a4-b0a9-469e-afad-b1443759875b', Logger::INFO));
+
+            try {
+                if (!empty($input_array_from_csGoBack)) {
+                    foreach ($input_array_from_csGoBack as $key => $value) {
+                        if ($ops_name === $key) {
+                            $array = array(
+                                "percent" => 100 - ($ops_price / $value['price']),
+                                "tag" => "percent",
+                            );
+                            $log->addInfo(json_encode($array));
+                            if (100 - ($ops_price / $value['price']) >= $percent) {
+                                return true;
+                            } else {
+                                return false;
+                            }
                         }
                     }
+                } else {
+                    return false;
                 }
-            } else {
-                return false;
+            } catch (\Exception $e) {
+                $logger->info($e->getMessage());
             }
         } catch (\Exception $e) {
-            return $e->getMessage();
+            echo $e->getMessage();
         }
     }
 
@@ -552,7 +565,7 @@ class OpsApiHelper
             }
             set_time_limit(0);
             ob_implicit_flush();
-            $address = '195.201.100.83';
+            $address = '195.201.39.72';
 
             error_reporting(E_ALL);
             $log = new Logger("Php Worker");
@@ -588,12 +601,11 @@ class OpsApiHelper
                     $time_start = microtime(true);
                     foreach ($out as $key => $value) {
                         if ($value["amount"] >= $min_cost) {
-                            system(
+                            shell_exec(
                                 "php bin/console ops:trade --cost=" . $value["amount"]
                                 . " --name=" . $value["market_name"]
                                 . " --id=" . $value["id"]
-                                . " --p=" . $percent . "&",
-                                $stdout
+                                . " --p=" . $percent . " > /dev/null 2>/dev/null &"
                             );
                         }
                     }
