@@ -56,6 +56,13 @@ class OpsTradeCommand extends ContainerAwareCommand
                 if ($balance->getBalance() >= $cost) {
                     $output = $ops_helper->opsByeItem_v2($id, $cost);
                     $output_info_about_trade = $output;
+                    $output = json_decode($output, 1);
+                    if ($output["status"] == 2002) {
+                        sleep(240);
+                        $output = $ops_helper->opsByeItem_v2($id, $cost);
+                        $output_info_about_trade = $output;
+                    }
+
                     $balance->setBalance($ops_helper->getBalance() * 100);
 
                     $em = $this
