@@ -60,6 +60,7 @@ class OpsTradeCommand extends ContainerAwareCommand
                     );
                 if ($balance->getBalance() >= $cost) {
                     $item = $ops_helper->searchItem($cost / 100, 1, $name, "730_2");
+                    $log->addInfo(json_encode(array($item['response']['sales'], $cost/100, $name)));
                     if (!empty($item['response']['sales'])) {
                         $output_info_about_trade = $ops_helper->opsByeItem($item['response']);
 
@@ -69,7 +70,7 @@ class OpsTradeCommand extends ContainerAwareCommand
                         }
 
                     } else {
-                        $log->addInfo(json_encode($item['response']['sales'][0]));
+                        $log->addInfo(json_encode(array($name, $cost, "slow")));
                         $output_info_about_trade = "so slow";
                     }
 
