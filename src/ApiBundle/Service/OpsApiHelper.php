@@ -603,7 +603,7 @@ class OpsApiHelper
                         if ($value["amount"] >= $min_cost) {
                             shell_exec(
                                 "php bin/console ops:trade --cost=" . $value["amount"]
-                                . " --name=" . $value["market_name"]
+                                . " --name=" . $value["marketName"]
                                 . " --id=" . $value["id"]
                                 . " --p=" . $percent . " > /dev/null 2>/dev/null &"
                             );
