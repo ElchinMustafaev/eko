@@ -30,6 +30,11 @@ class OpsTradeCommand extends ContainerAwareCommand
             $logger = $this->getContainer()->get('monolog.logger.trade');
 
             try {
+
+                $log = new Logger("Ops Trade Command");
+                $log->pushHandler(new LogglyHandler('1827242c-b940-423b-ab53-cf4fc8a77d2a', Logger::INFO));
+
+
                 $time_start = microtime(true);
                 $cost = $input->getOption("cost");
                 $name = urldecode($input->getOption("name"));
@@ -54,14 +59,20 @@ class OpsTradeCommand extends ContainerAwareCommand
                         )
                     );
                 if ($balance->getBalance() >= $cost) {
-                    $output = $ops_helper->opsByeItem_v2($id, $cost);
-                    $output_info_about_trade = $output;
-                    $output = json_decode($output, 1);
-                    if ($output["status"] == 2002) {
-                        sleep(240);
-                        $output = $ops_helper->opsByeItem_v2($id, $cost);
-                        $output_info_about_trade = $output;
+                    $item = $ops_helper->searchItem($cost / 100, 1, $name, "730_2");
+                    if (!empty($item['response']['sales'])) {
+                        $output_info_about_trade = $ops_helper->opsByeItem($item['response']);
+
+                        if (json_decode($output_info_about_trade["status"]) == 2002) {
+                            sleep(240);
+                            $output_info_about_trade = $ops_helper->opsByeItem($item['response']);
+                        }
+
+                    } else {
+                        $output_info_about_trade = "so slow";
                     }
+
+
 
                     $balance->setBalance($ops_helper->getBalance() * 100);
 
@@ -87,8 +98,6 @@ class OpsTradeCommand extends ContainerAwareCommand
             );
             $logger->info(json_encode($log_array));
 
-            $log = new Logger("Ops Trade Command");
-            $log->pushHandler(new LogglyHandler('1827242c-b940-423b-ab53-cf4fc8a77d2a', Logger::INFO));
 
             $log->addInfo(json_encode($log_array));
 
