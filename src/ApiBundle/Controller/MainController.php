@@ -62,7 +62,7 @@ class MainController extends Controller
         $ops_helper = $this->get("api.ops.helper");
         //$return = $ops_helper->searchItem(27, 50, "StatTrak™ MAC-10 | Carnivore (Minimal Wear)", "730_2");
         //$return = $ops_helper->downloadOpsLowCost("730");
-        print_r($ops_helper->searchItem(61, 10, "M4A1-S | Nitro (Well-Worn)", "730_2"));
+        print_r($ops_helper->opsByeItem_v2(459987578, 1183));
 
 
         return new Response();
