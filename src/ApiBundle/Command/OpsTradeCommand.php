@@ -43,7 +43,7 @@ class OpsTradeCommand extends ContainerAwareCommand
                 $return = $ops_helper->getInfoFromCsGoBack($name, "");
                 $return = $return['result'];
                 $output_info_about_trade = "false";
-                $tag = "don't buy";
+                $tag = "don't";
                 $equal_price = $ops_helper->EqualPrice($name, $cost, $return, $percent);
                 if ($equal_price) {
                     $balance = $this
@@ -69,7 +69,9 @@ class OpsTradeCommand extends ContainerAwareCommand
                          **/
                         $text = "https://ru.opskins.com/?loc=shop_view_item&item=" . $id;
                         $ops_helper->bot($text, "-1001184076461");
+                        $equal_price = "true";
                         $output_info_about_trade = $ops_helper->opsByeItem_v2($id, $cost);
+                        /**
                         if (json_decode($output_info_about_trade["status"], 1) == 2002) {
                             sleep(600);
                             $output_info_about_trade = $ops_helper->opsByeItem_v2($id, $cost);
@@ -82,6 +84,7 @@ class OpsTradeCommand extends ContainerAwareCommand
                                 )
                             );
                         }
+                         **/
                         $balance->setBalance($ops_helper->getBalance() * 100);
                         $em = $this
                             ->getContainer()
@@ -99,8 +102,8 @@ class OpsTradeCommand extends ContainerAwareCommand
                     "name" => $name,
                     "id" => $id,
                     "percent" => $percent,
-                    "equal price" => $equal_price,
-                    "output info" => $output_info_about_trade,
+                    "equal_price" => $equal_price,
+                    "output_info" => $output_info_about_trade,
                     "tag" => $tag,
                 );
 
