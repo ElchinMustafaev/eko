@@ -2,6 +2,8 @@
 
 namespace ApiBundle\Command;
 
+use Monolog\Handler\LogglyHandler;
+use Monolog\Logger;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -24,6 +26,9 @@ class CsgobackTradeCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try {
+            $log = new Logger("CsGoBack");
+            $log->pushHandler(new LogglyHandler('1827242c-b940-423b-ab53-cf4fc8a77d2a', Logger::INFO));
+
             $min_cost = $input->getOption('min_cost');
             $max_cost = $input->getOption('max_cost');
             $percent = $input->getOption('percent');
@@ -38,18 +43,23 @@ class CsgobackTradeCommand extends ContainerAwareCommand
                     $csgoback_result = $ops_helper->equalPriceCsGoBack($value, $max_cost, $min_cost, $percent);
                     print_r($csgoback_result);
                     if ($csgoback_result != null) {
-                        $item = $ops_helper->searchItem($csgoback_result['ops.cost'], 5, $csgoback_result['name'], "730_2");
+                        $item = $ops_helper->searchItem($csgoback_result['ops.cost'], 2, $csgoback_result['name'], "730_2");
                         $output->writeln("==========================================\n");
-                        $output->writeln("item find \n");
+                        $log->addInfo("item find");
                         $output->writeln("==========================================\n");
                         if (!empty($item['response']['sales'])) {
                             $output->writeln("--------------------------------------\n");
-                            $output->writeln($ops_helper->opsByeItem($item['response']));
+                            $log->addInfo(json_encode(array(
+                                        $ops_helper->opsByeItem($item['response']),
+                                        "cs_buy",
+                                    )
+                                )
+                            );
                             $output->writeln("--------------------------------------\n");
                             $max_cost = $ops_helper->getBalance();
-                            $ops_helper->bot('Хей парни, я купил вот эту шмотку ' . $csgoback_result['name'], "-1001184076461");
-                            $ops_helper->bot('И у меня осталось ' . $max_cost, "-1001184076461");
-                            sleep(1);
+                            //$ops_helper->bot('Хей парни, я купил вот эту шмотку ' . $csgoback_result['name'], "-1001184076461");
+                            //$ops_helper->bot('И у меня осталось ' . $max_cost, "-1001184076461");
+                            //sleep(1);
                         } else {
                             $output->writeln("--------------------------------------\n");
                             $output->writeln('SO SLOW');

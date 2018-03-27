@@ -67,9 +67,11 @@ class OpsTradeCommand extends ContainerAwareCommand
                          * )
                          * );
                          **/
+                        $text = "https://ru.opskins.com/?loc=shop_view_item&item=" . $id;
+                        $ops_helper->bot($text, "-1001184076461");
                         $output_info_about_trade = $ops_helper->opsByeItem_v2($id, $cost);
                         if (json_decode($output_info_about_trade["status"], 1) == 2002) {
-                            sleep(240);
+                            sleep(600);
                             $output_info_about_trade = $ops_helper->opsByeItem_v2($id, $cost);
                             $log->addInfo(
                                 json_encode(
