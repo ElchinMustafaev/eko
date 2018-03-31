@@ -483,6 +483,42 @@ class OpsApiHelper
     }
 
     /**
+     * @param $item_list
+     * @param $price
+     *
+     * @return mixed|string
+     */
+    public function opsByeItem_v3($item_list, $price)
+    {
+        try {
+            $url = "https://api.opskins.com/ISales/BuyItems/v1/";
+            $ch = curl_init();
+
+            $item =
+                "key=" . $this->container->getParameter("ops_api_key") .
+                "&saleids=" . $item_list . "&total=" . $price;
+
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                    'Content-Type: application/x-www-form-urlencoded',
+                )
+            );
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $item);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+            $output = curl_exec($ch);
+
+            curl_close($ch);
+
+            return $output;
+
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    /**
      * @return float|int|mixed|string
      */
     public function getBalance()

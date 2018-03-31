@@ -5,6 +5,7 @@ namespace ApiBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class MainController extends Controller
@@ -51,20 +52,60 @@ class MainController extends Controller
     }
 
     /**
-     * @Route("test2")
+     * @Route("form")
      *
      * @return Response
      */
-    public function test2()
+    public function form()
     {
-        //echo date(DATE_RFC822);
-        //echo date('D, d M Y H:i:s', time() - 10800) . ' GMT';
+        $html = "<!DOCTYPE HTML>
+<html>
+ <head>
+  <meta charset=\"utf-8\">
+  <title>Тег FORM, атрибут method</title>
+ </head>
+ <body>  
+ <form action=\"buy\" method=\"post\">
+ name
+  <p><input type=\"text\" name=\"name\"></p>
+  price
+  <p><input type=\"text\" name=\"price\"></p>
+  <p><input type=\"submit\" value=\"Отправить\"></p>
+ </form>
+ </body>
+</html>";
+        return new Response($html);
+    }
+
+    /**
+     * @Route("buy")
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function buy(Request $request)
+    {
+        $name = $request->get("name");
+        $price = $request->get("price");
+        $list = "";
         $ops_helper = $this->get("api.ops.helper");
-        //$return = $ops_helper->searchItem(27, 50, "StatTrak™ MAC-10 | Carnivore (Minimal Wear)", "730_2");
-        //$return = $ops_helper->downloadOpsLowCost("730");
-        print_r($ops_helper->opsByeItem_v2(459987578, 1183));
+        $i = 0;
 
-
+        $id_array = $ops_helper->searchItem($price, 0, $name, "578080_2");
+        foreach ($id_array["response"]["sales"] as $sale) {
+            if ($sale["amount"] == $price) {
+                $list .= $sale["id"] . ",";
+                $i++;
+            }
+        }
+        if (strlen($list) > 0) {
+            $list = substr($list, 0, -1);
+            $result = $ops_helper->opsByeItem_v3($list, $i * $price);
+            print_r("Пытался купить " . $i . " вещей");
+            print_r($result . "\n");
+        } else {
+            print_r("null");
+        }
         return new Response();
     }
 }
