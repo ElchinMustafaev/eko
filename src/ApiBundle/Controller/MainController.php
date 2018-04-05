@@ -108,4 +108,79 @@ class MainController extends Controller
         }
         return new Response();
     }
+
+    /**
+     * @Route("test3")
+     *
+     * @return Response
+     */
+    public function test3()
+    {
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => "https://api.opskins.com/IInventory/GetInventory/v1/?key=9705eea199113d9e7c005b6a27f0f1",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "GET",
+            CURLOPT_HTTPHEADER => array(
+                "Cache-Control: no-cache",
+                "Postman-Token: 045029cc-d320-2774-4e2b-d296f73ba422"
+            ),
+        ));
+
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+        $response = json_decode($response,1);
+        $response = $response["response"]["items"];
+        $i = 0;
+        foreach ($response as $value) {
+            $i++;
+            $new_array[$value["id"]] = $value["bot_id"];
+        }
+        asort($new_array);
+        $chunk_array = array_chunk($new_array, 100, true);
+        foreach ($chunk_array as $value) {
+            $list = "";
+            foreach ($value as $id => $bot) {
+                $list .= $id . ",";
+            }
+                if (strlen($list) > 0) {
+                    $list = substr($list, 0, -1);
+                    $curl = curl_init();
+
+                    curl_setopt_array($curl, array(
+                        CURLOPT_URL => "https://api.opskins.com/IInventory/Withdraw/v1/",
+                        CURLOPT_RETURNTRANSFER => true,
+                        CURLOPT_ENCODING => "",
+                        CURLOPT_MAXREDIRS => 10,
+                        CURLOPT_TIMEOUT => 30,
+                        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                        CURLOPT_CUSTOMREQUEST => "POST",
+                        CURLOPT_POSTFIELDS => "key=9705eea199113d9e7c005b6a27f0f1&items=" . $list,
+                        CURLOPT_HTTPHEADER => array(
+                            "Cache-Control: no-cache",
+                            "Content-Type: application/x-www-form-urlencoded",
+                            "Postman-Token: fbcdb080-6b19-ccdc-2200-b0fcb640256a"
+                        ),
+                    ));
+
+                    $response = curl_exec($curl);
+                    $err = curl_error($curl);
+
+                    curl_close($curl);
+
+                    print_r($response);
+                } else {
+                    print_r("NULL");
+                }
+
+        }
+        return new Response();
+    }
 }
