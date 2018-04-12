@@ -25,7 +25,7 @@ class MainController extends Controller
             //$i = 0;
             //$return_from_db = $ops_helper->getInfoFromDb(1000, 5000, 1, 500);
             //print_r($return_from_db);
-            $return = $ops_helper->getTableFromCsGoBack();
+            $return = $ops_helper->opsByeItem_v2(468290815,2);
             /**
             foreach ($return_from_db as $key => $value) {
                 $return = $ops_helper->getInfoFromCsGoBack($value['name'], "");

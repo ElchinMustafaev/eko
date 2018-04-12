@@ -418,7 +418,8 @@ class OpsApiHelper
 
             $item =
                 "key=" . $this->container->getParameter("ops_api_key") .
-                "&saleids=" . $item_list["sales"][0]["id"] . "&total=" . $item_list["sales"][0]["amount"];
+                "&saleids=" . $item_list["sales"][0]["id"] . "&total=" . $item_list["sales"][0]["amount"] .
+                "&allow_trade_locked=1";
 
             curl_setopt($ch, CURLOPT_URL, $url);
             curl_setopt($ch, CURLOPT_POST, 1);
@@ -454,7 +455,7 @@ class OpsApiHelper
 
             $item =
                 "key=" . $this->container->getParameter("ops_api_key") .
-                "&saleids=" . $id . "&total=" . $cost;
+                "&saleids=" . $id . "&total=" . $cost . "&allow_trade_locked=1";
 
             curl_setopt($ch, CURLOPT_URL, $url);
             curl_setopt($ch, CURLOPT_POST, 1);
