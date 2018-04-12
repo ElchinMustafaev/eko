@@ -16,7 +16,7 @@ class OpsEqualCommand extends ContainerAwareCommand
     {
         $this
             ->setName('ops:equal')
-            ->setDescription('...')
+            ->setDescription('Check percent')
             ->addOption('cost', null, InputOption::VALUE_REQUIRED, 'cost')
             ->addOption('name', null, InputOption::VALUE_REQUIRED, 'name')
             ->addOption('id', null, InputOption::VALUE_REQUIRED, 'item id')

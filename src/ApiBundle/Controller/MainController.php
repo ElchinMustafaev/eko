@@ -25,7 +25,7 @@ class MainController extends Controller
             //$i = 0;
             //$return_from_db = $ops_helper->getInfoFromDb(1000, 5000, 1, 500);
             //print_r($return_from_db);
-            //$return = $ops_helper->getInfoFromCsGoBack($return_from_db[0]['name'], "");
+            $return = $ops_helper->getTableFromCsGoBack();
             /**
             foreach ($return_from_db as $key => $value) {
                 $return = $ops_helper->getInfoFromCsGoBack($value['name'], "");
@@ -38,7 +38,6 @@ class MainController extends Controller
             //print_r($ops_helper->removeRecord($return_from_db));
             //echo "\n";
 
-            $return = "";
             return new JsonResponse($return);
         } catch (\Exception $e) {
             $err = array(

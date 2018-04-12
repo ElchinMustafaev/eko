@@ -82,6 +82,10 @@ class CsgobackTradeCommand extends ContainerAwareCommand
                 sleep(10);
             }
         } catch (\Exception $e) {
+            print_r($e->getMessage());
+            print_r($e->getLine());
+            print_r($e->getFile());
+
 
         }
     }

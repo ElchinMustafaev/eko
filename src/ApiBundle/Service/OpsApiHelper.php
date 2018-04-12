@@ -295,37 +295,31 @@ class OpsApiHelper
     {
         try {
             $skin = "app=730_2&leftService=opskins.com&rightService=cs.money&leftServiceMinCount=&rightServiceMinCount=&leftServiceMaxCount=&rightServiceMaxCount=&leftUpdateTime=1&rightUpdateTime=&opskinsSales=10";
-            $url = "http://csgoback.net/ajax/comparison";
+
             $ch = curl_init();
 
-            curl_setopt($ch, CURLOPT_URL, $url);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-                    'Cache-Control: no-store, no-cache, must-revalidate',
-                    'Cf-Ray: 3f22b12601848e67-DME',
-                    'Content-Type: application/x-www-form-urlencoded',
-                    'Date: ' . date('D, d M Y H:i:s', time() - 10800) . ' GMT',
-                    'Expires: Thu, 19 Nov 1981 08:52:00 GMT',
-                    'Pragma: no-cache',
-                    'Server: cloudflar',
-                    'Transfer-Encoding: chunked',
-                    'Connection: keep-alive',
-                    'Content-Encoding: gzip'
-                )
-            );
-
+            curl_setopt($ch, CURLOPT_URL, "http://csgoback.net/ajax/comparison");
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_POSTFIELDS,$skin);
             curl_setopt($ch, CURLOPT_POST, 1);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $skin);
-            curl_setopt($ch, CURLOPT_COOKIE, "__cfduid=df40c2f5b5e053f3435d6a188031c6af91505581236; path=/; domain=.csgoback.net; HttpOnly; Expires=Sun, 25 Feb 2019 13:26:19 GMT;");
-            curl_setopt($ch, CURLOPT_COOKIE, "_ga=GA1.2.337131466.1505581226; path=/; domain=.csgoback.net; Expires=Tue, 19 Jan 2038 03:14:07 GMT;");
-            curl_setopt($ch, CURLOPT_COOKIE, "_gat=1; path=/; domain=.csgoback.net; Expires=Tue, 19 Jan 2038 03:14:07 GMT;");
-            curl_setopt($ch, CURLOPT_COOKIE, "_gid=GA1.2.35540825.1519978685; path=/; domain=.csgoback.net; Expires=Tue, 19 Jan 2038 03:14:07 GMT;");
-            curl_setopt($ch, CURLOPT_COOKIE, "_ym_isad=2; path=/; domain=.csgoback.net; Expires=Tue, 19 Jan 2038 03:14:07 GMT;");
-            curl_setopt($ch, CURLOPT_COOKIE, "_ym_uid=1510571535413303924; path=/; domain=.csgoback.net; Expires=Tue, 19 Jan 2038 03:14:07 GMT;");
-            curl_setopt($ch, CURLOPT_COOKIE, "PHPSESSID=e867f9d214c84242b9a4767d0d1ab5fd; path=/; domain=.csgoback.net; Expires=Tue, 19 Jan 2038 03:14:07 GMT;");
-            curl_setopt($ch, CURLOPT_COOKIE, "BACKSESSID=ae2894c9424eeacfba5e1fc979a3fc3e; path=/; domain=.csgoback.net; Expires=Tue, 19 Jan 2038 03:14:07 GMT;");
-            //curl_setopt($ch, CURLOPT_COOKIE, "BACKSESSID=acd5f15ca402f0cd9d88b7c9677f852c; path=/; domain=.csgoback.net; Expires=Tue, 19 Jan 2038 03:14:07 GMT;");
+            curl_setopt($ch, CURLOPT_ENCODING, 'gzip, deflate');
 
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $headers = array();
+            $headers[] = "Pragma: no-cache";
+            $headers[] = "Origin: http://csgoback.net";
+            $headers[] = "Accept-Encoding: gzip, deflate";
+            $headers[] = "Accept-Language: ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7";
+            $headers[] = "User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.119 Safari/537.36";
+            $headers[] = "Content-Type: application/x-www-form-urlencoded; charset=UTF-8";
+            $headers[] = "Accept: application/json, text/javascript, */*; q=0.01";
+            $headers[] = "Cache-Control: no-cache";
+            $headers[] = "X-Requested-With: XMLHttpRequest";
+            $headers[] = "Cookie: __cfduid=df40c2f5b5e053f3435d6a188031c6af91505581236; _ga=GA1.2.337131466.1505581226; _ym_uid=1510571535413303924; BACKSESSID=90276e09b34c3af741ba5b9f94c0b909; _gid=GA1.2.551971026.1523445908; _ym_isad=1; _ym_visorc_46618524=w; _gat=1";
+            $headers[] = "Connection: keep-alive";
+            $headers[] = "Referer: http://csgoback.net/comparison";
+            $headers[] = "Dnt: 1";
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
 
             $result = curl_exec($ch);
             curl_close($ch);
