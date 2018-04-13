@@ -341,6 +341,9 @@ class OpsApiHelper
     public function equalPriceCsGoBack($input_array, $max_cost, $min_cost, $percent)
     {
         try {
+            if ($input_array['name'] == "Sticker | Cloud9 | MLG Columbus 2016" || $input_array["name"] == "MAC-10 | Curse (Battle-Scarred)") {
+                return null;
+            }
             if ($input_array['opskins.com']['price'] <= $max_cost && $input_array['opskins.com']['price'] >= $min_cost) {
                 if (100 - ((($input_array['opskins.com']['price'] * 100) / $input_array['cs.money']['price'])) >= $percent) {
                     return array(
